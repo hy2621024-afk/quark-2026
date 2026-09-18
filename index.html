@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿼크(QUARK) 동아리 축전 예약 시스템</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Pretendard -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        quark: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            dark: '#0f172a',
+                            card: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Pretendard', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #f8fafc;
+            font-family: 'Inter', 'Pretendard', sans-serif;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2dd4bf;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-quark-400 selection:text-slate-900">
+
+    <header class="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-quark-600 to-cyan-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-quark-500/20">
+                    ⚛️
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
+                        쿼크 <span class="text-xs px-2 py-0.5 rounded-full bg-quark-500/20 text-quark-400 border border-quark-500/30">QUARK</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">2026 동아리 축전 부스 예약 시스템</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-1 sm:space-x-2">
+                <button onclick="switchTab('reservation')" id="tab-btn-reservation" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-quark-500 text-slate-950 hover:bg-quark-400 shadow-md">
+                    <i class="fa-solid fa-calendar-check mr-1"></i>축전 예약
+                </button>
+                <button onclick="switchTab('lookup')" id="tab-btn-lookup" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-magnifying-glass mr-1"></i>내 예약 조회
+                </button>
+                <button onclick="switchTab('admin')" id="tab-btn-admin" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-amber-400 hover:bg-slate-800 flex items-center gap-1">
+                    <i class="fa-solid fa-lock text-amber-400 text-xs"></i>
+                    <span>관리자 / 명단</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- Banner Info Card -->
+        <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700/60 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-quark-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-quark-500/10 text-quark-400 text-xs font-semibold mb-3 border border-quark-500/20">
+                        <i class="fa-solid fa-atom animate-spin" style="animation-duration: 8s;"></i> 과학 탐구 동아리 쿼크(QUARK)
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+                        🧪 9월 23일 축전 부스 체험 사전 예약
+                    </h2>
+                    <p class="text-slate-300 text-sm leading-relaxed max-w-2xl">
+                        원활하고 안전한 축전 진행을 위해 타임별 **정원 6명(15분 단위)**으로 선착순 예약을 실시합니다. 원하는 시간대를 선택해 신청해주세요!
+                    </p>
+                </div>
+                
+                <div class="flex flex-col gap-2.5 min-w-[220px] bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-2.5 text-xs text-slate-300">
+                        <i class="fa-regular fa-calendar-days text-quark-400 text-base w-5 text-center"></i>
+                        <span>일시: <strong class="text-white">2026년 9월 23일(수)</strong></span>
+                    </div>
+                    <div class="flex items-center gap-2.5 text-xs text-slate-300">
+                        <i class="fa-regular fa-clock text-quark-400 text-base w-5 text-center"></i>
+                        <span>운영시간: <strong class="text-white">09:40 ~ 14:30</strong></span>
+                    </div>
+                    <div class="flex items-center gap-2.5 text-xs text-slate-300">
+                        <i class="fa-solid fa-users text-quark-400 text-base w-5 text-center"></i>
+                        <span>타임당 인원: <strong class="text-amber-400">최대 6명 (15분 단위)</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: RESERVATION FORM -->
+        <section id="view-reservation" class="space-y-8">
+            <form id="reservationForm" onsubmit="handleReservationSubmit(event)">
+                <!-- Step 1: User Info Input -->
+                <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-xl mb-8 border border-slate-800">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="w-7 h-7 rounded-lg bg-quark-500/20 text-quark-400 flex items-center justify-center text-sm font-black">1</span>
+                        신청자 정보 입력 (학번 / 이름)
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2" for="userName">
+                                이름 <span class="text-rose-400">*</span>
+                            </label>
+                            <input type="text" id="userName" required placeholder="예: 홍길동" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-quark-400 focus:ring-1 focus:ring-quark-400 transition-all text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2" for="studentId">
+                                학번 / 학년반 <span class="text-rose-400">*</span>
+                            </label>
+                            <input type="text" id="studentId" required placeholder="예: 20315 또는 2학년 3반 15번" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-quark-400 focus:ring-1 focus:ring-quark-400 transition-all text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2" for="userPhone">
+                                연락처 (선택)
+                            </label>
+                            <input type="tel" id="userPhone" placeholder="예: 010-1234-5678" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-quark-400 focus:ring-1 focus:ring-quark-400 transition-all text-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Time Selection -->
+                <div class="glass-card p-6 sm:p-8 rounded-2xl shadow-xl border border-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-quark-500/20 text-quark-400 flex items-center justify-center text-sm font-black">2</span>
+                                체험 시간대 선택
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">원하는 15분 타임을 선택해주세요. (각 타임당 6명 선착순 마감)</p>
+                        </div>
+                        
+                        <!-- Status Legend -->
+                        <div class="flex items-center gap-4 text-xs">
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span> 신청 가능</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span> 마감 임박</span>
+                            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span> 마감 완료</span>
+                        </div>
+                    </div>
+
+                    <!-- 1타임 (오전 09:40 ~ 11:10) Section -->
+                    <div class="mb-8">
+                        <div class="flex items-center gap-2.5 mb-4 pb-2 border-b border-slate-800">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold flex items-center gap-1.5">
+                                <i class="fa-regular fa-sun"></i> 1타임 (오전)
+                            </span>
+                            <h4 class="text-sm font-bold text-white">09:40 ~ 11:10 <span class="text-xs text-slate-400 font-normal ml-1">(15분 단위 6개 타임)</span></h4>
+                        </div>
+                        <div id="session1-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Dynamic 6 slots rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- 2타임 (오후 13:00 ~ 14:30) Section -->
+                    <div>
+                        <div class="flex items-center gap-2.5 mb-4 pb-2 border-b border-slate-800">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-bold flex items-center gap-1.5">
+                                <i class="fa-regular fa-moon"></i> 2타임 (오후)
+                            </span>
+                            <h4 class="text-sm font-bold text-white">13:00 ~ 14:30 <span class="text-xs text-slate-400 font-normal ml-1">(15분 단위 6개 타임)</span></h4>
+                        </div>
+                        <div id="session2-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Dynamic 6 slots rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Selected Summary & Submit Button -->
+                    <div class="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-sm">
+                            <span class="text-slate-400">선택한 시간: </span>
+                            <span id="selectedSlotText" class="font-bold text-quark-400 text-base">선택되지 않음</span>
+                        </div>
+
+                        <button type="submit" id="submitBtn" disabled class="w-full sm:w-auto px-8 py-3.5 rounded-xl text-base font-extrabold transition-all duration-200 bg-slate-800 text-slate-500 cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            예약 신청하기
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- TAB 2: RESERVATION LOOKUP & CANCEL -->
+        <section id="view-lookup" class="hidden space-y-6">
+            <div class="glass-card p-6 sm:p-8 rounded-2xl border border-slate-800">
+                <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-quark-400"></i> 내 예약 내역 조회
+                </h3>
+                <p class="text-xs text-slate-400 mb-6">신청했던 이름과 학번을 입력하여 예약 상태를 확인하거나 취소할 수 있습니다.</p>
+
+                <div class="flex flex-col sm:flex-row gap-3 max-w-xl mb-6">
+                    <input type="text" id="lookupName" placeholder="이름 입력 (예: 홍길동)" class="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-quark-400 text-sm">
+                    <input type="text" id="lookupStudentId" placeholder="학번 입력 (예: 20315)" class="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-quark-400 text-sm">
+                    <button onclick="performLookup()" class="px-6 py-3 bg-quark-500 text-slate-950 font-bold rounded-xl hover:bg-quark-400 transition-all text-sm whitespace-nowrap">
+                        조회하기
+                    </button>
+                </div>
+
+                <!-- Lookup Results Box -->
+                <div id="lookupResult" class="hidden border-t border-slate-800 pt-6">
+                    <!-- Dynamic details inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ADMIN PANEL -->
+        <section id="view-admin" class="hidden space-y-6">
+            <div class="glass-card p-6 sm:p-8 rounded-2xl border border-slate-800">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-shield text-amber-400"></i> 쿼크 축전 예약 관리자 모드
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">시간대별 예약 신청 명단(누가 몇타임 언제 신청했는지)을 실시간 관리합니다.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="exportToCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-excel"></i> 명단 엑셀(CSV) 다운로드
+                        </button>
+                        <button onclick="fillSampleData()" class="px-3.5 py-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt"></i> 샘플 예약 채우기
+                        </button>
+                        <button onclick="resetAllData()" class="px-3.5 py-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30 hover:bg-rose-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i> 전체 초기화
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Admin Overall Stats -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">총 정원 (12개 슬롯)</span>
+                        <span class="text-2xl font-black text-white">72명</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">현재 총 예약자</span>
+                        <span id="adminTotalReserved" class="text-2xl font-black text-quark-400">0명</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">마감 완료 슬롯</span>
+                        <span id="adminClosedSlotsCount" class="text-2xl font-black text-rose-400">0 / 12</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">남은 총 좌석</span>
+                        <span id="adminRemainingSeats" class="text-2xl font-black text-amber-400">72석</span>
+                    </div>
+                </div>
+
+                <!-- Admin Roster Table -->
+                <div class="space-y-6">
+                    <h4 class="font-bold text-white text-base border-b border-slate-800 pb-3">타임별 명단 및 실시간 현황</h4>
+                    <div id="adminSlotsList" class="space-y-4">
+                        <!-- Dynamic rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Modal Dialog (No native alert) -->
+    <div id="modalOverlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+            <div class="w-12 h-12 rounded-full bg-quark-500/20 text-quark-400 flex items-center justify-center text-2xl mb-4 mx-auto" id="modalIcon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white text-center mb-2" id="modalTitle">알림</h3>
+            <div class="text-sm text-slate-300 text-center mb-6 leading-relaxed" id="modalMessage">
+                내용이 표시됩니다.
+            </div>
+            <div class="flex justify-center">
+                <button onclick="closeModal()" class="w-full py-3 bg-quark-500 hover:bg-quark-400 text-slate-950 font-bold rounded-xl transition-all">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Authentication Modal -->
+    <div id="loginModalOverlay" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl mb-3 mx-auto">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <h3 class="text-xl font-black text-white text-center mb-1">관리자 인증 로그인</h3>
+            <p class="text-xs text-slate-400 text-center mb-6">동아리 축전 관리자 전용 기능입니다.</p>
+
+            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="loginAdminId">아이디</label>
+                    <input type="text" id="loginAdminId" required placeholder="관리자 아이디 입력" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="loginAdminPw">비밀번호</label>
+                    <input type="password" id="loginAdminPw" required placeholder="비밀번호 입력" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 text-sm">
+                </div>
+
+                <div id="loginErrorMsg" class="text-xs text-rose-400 text-center font-bold hidden">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> 아이디 또는 비밀번호가 올바르지 않습니다.
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeLoginModal()" class="w-1/3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl transition-all">
+                        취소
+                    </button>
+                    <button type="submit" class="w-2/3 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black rounded-xl transition-all shadow-lg shadow-amber-500/20">
+                        로그인
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 동아리 쿼크 (QUARK) - All rights reserved.</p>
+            <p class="flex items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-flask text-quark-400"></i> 세상을 밝히는 과학 탐구 동아리 쿼크
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const APP_STORAGE_KEY = 'quark_festival_reservations_2026';
+        const MAX_CAPACITY = 6; // 타임(15분) 당 최대 6명 정원
+
+        // 관리자 로그인 계정 설정
+        const ADMIN_ID = 'hanyeju1005';
+        const ADMIN_PW = '2915';
+
+        // 타임 슬롯 설정: 1타임 (오전 09:40 ~ 11:10, 6개), 2타임 (오후 13:00 ~ 14:30, 6개)
+        const SLOT_CONFIG = [
+            // 1타임 (오전 09:40 ~ 11:10 - 15분 단위 6개)
+            { id: 's1_1', session: 'session1', timeText: '09:40 ~ 09:55', label: '1타임 - 1차' },
+            { id: 's1_2', session: 'session1', timeText: '09:55 ~ 10:10', label: '1타임 - 2차' },
+            { id: 's1_3', session: 'session1', timeText: '10:10 ~ 10:25', label: '1타임 - 3차' },
+            { id: 's1_4', session: 'session1', timeText: '10:25 ~ 10:40', label: '1타임 - 4차' },
+            { id: 's1_5', session: 'session1', timeText: '10:40 ~ 10:55', label: '1타임 - 5차' },
+            { id: 's1_6', session: 'session1', timeText: '10:55 ~ 11:10', label: '1타임 - 6차' },
+
+            // 2타임 (오후 13:00 ~ 14:30 - 15분 단위 6개)
+            { id: 's2_1', session: 'session2', timeText: '13:00 ~ 13:15', label: '2타임 - 1차' },
+            { id: 's2_2', session: 'session2', timeText: '13:15 ~ 13:30', label: '2타임 - 2차' },
+            { id: 's2_3', session: 'session2', timeText: '13:30 ~ 13:45', label: '2타임 - 3차' },
+            { id: 's2_4', session: 'session2', timeText: '13:45 ~ 14:00', label: '2타임 - 4차' },
+            { id: 's2_5', session: 'session2', timeText: '14:00 ~ 14:15', label: '2타임 - 5차' },
+            { id: 's2_6', session: 'session2', timeText: '14:15 ~ 14:30', label: '2타임 - 6차' }
+        ];
+
+        // Global State
+        let reservations = []; 
+        let selectedSlotId = null;
+        let isAdminLoggedIn = false;
+
+        function loadState() {
+            const saved = localStorage.getItem(APP_STORAGE_KEY);
+            if (saved) {
+                try {
+                    reservations = JSON.parse(saved);
+                } catch(e) {
+                    reservations = [];
+                }
+            } else {
+                // Initial Default Demo Data for illustration
+                reservations = [
+                    { id: 'res_1', name: '김민준', studentId: '10101', phone: '010-1111-2222', slotId: 's1_1', createdAt: new Date().toISOString() },
+                    { id: 'res_2', name: '이서연', studentId: '10102', phone: '010-2222-3333', slotId: 's1_1', createdAt: new Date().toISOString() },
+                    { id: 'res_3', name: '박도윤', studentId: '10205', phone: '', slotId: 's1_1', createdAt: new Date().toISOString() },
+                    { id: 'res_4', name: '최지우', studentId: '20310', phone: '', slotId: 's1_1', createdAt: new Date().toISOString() },
+                    { id: 'res_5', name: '정예준', studentId: '20412', phone: '', slotId: 's1_1', createdAt: new Date().toISOString() },
+                    { id: 'res_6', name: '한소율', studentId: '30101', phone: '', slotId: 's1_1', createdAt: new Date().toISOString() }
+                ];
+                saveState();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(reservations));
+        }
+
+        function renderSlots() {
+            const s1Container = document.getElementById('session1-container');
+            const s2Container = document.getElementById('session2-container');
+
+            if (!s1Container || !s2Container) return;
+
+            s1Container.innerHTML = '';
+            s2Container.innerHTML = '';
+
+            SLOT_CONFIG.forEach(slot => {
+                const slotReservations = reservations.filter(r => r.slotId === slot.id);
+                const count = slotReservations.length;
+                const remaining = MAX_CAPACITY - count;
+                const isFull = count >= MAX_CAPACITY;
+                const isSelected = selectedSlotId === slot.id;
+
+                const percent = Math.min(100, Math.round((count / MAX_CAPACITY) * 100));
+
+                let borderStyle = 'border-slate-800 hover:border-quark-500/60 bg-slate-900/90 cursor-pointer hover:shadow-md';
+                let statusBadge = '<span class="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold">신청 가능</span>';
+                let progressBarBg = 'bg-emerald-500';
+
+                if (isFull) {
+                    borderStyle = 'border-rose-900/40 bg-rose-950/20 opacity-60 cursor-not-allowed select-none pointer-events-none';
+                    statusBadge = '<span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold">❌ 마감 완료 (0석)</span>';
+                    progressBarBg = 'bg-rose-500';
+                } else if (remaining <= 2) {
+                    statusBadge = '<span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold animate-pulse">⚡ 마감 임박</span>';
+                    progressBarBg = 'bg-amber-500';
+                }
+
+                if (isSelected && !isFull) {
+                    borderStyle = 'border-quark-400 bg-quark-950/50 ring-2 ring-quark-400 shadow-xl shadow-quark-500/15 cursor-pointer';
+                }
+
+                const cardHtml = `
+                    <div ${!isFull ? `onclick="selectSlot('${slot.id}')"` : ''} 
+                         class="p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden group ${borderStyle}">
+                        
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-extrabold text-slate-400 tracking-wider">${slot.label}</span>
+                            ${statusBadge}
+                        </div>
+
+                        <div class="text-xl font-black text-white tracking-tight mb-3 flex items-center gap-2">
+                            <i class="fa-regular fa-clock text-quark-400 text-base"></i>
+                            ${slot.timeText}
+                        </div>
+
+                        <!-- Capacity & Seats Counter -->
+                        <div class="space-y-1.5 mb-4">
+                            <div class="flex justify-between text-xs font-medium">
+                                <span class="text-slate-300">신청 인원: <strong class="${isFull ? 'text-rose-400' : 'text-white'} font-bold">${count} / ${MAX_CAPACITY}명</strong></span>
+                                <span class="${remaining === 0 ? 'text-rose-400 font-bold' : (remaining <= 2 ? 'text-amber-400 font-bold' : 'text-quark-400 font-bold')}">
+                                    ${isFull ? '잔여 0석' : `${remaining}자리 남음`}
+                                </span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                                <div class="${progressBarBg} h-2 rounded-full transition-all duration-300" style="width: ${percent}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Full / Selection Action Button -->
+                        ${isFull ? `
+                            <div class="w-full py-2.5 rounded-xl bg-slate-900 border border-rose-900/30 text-center text-xs font-bold text-rose-400/80">
+                                <i class="fa-solid fa-ban mr-1"></i> 신청 마감됨
+                            </div>
+                        ` : `
+                            <button type="button" onclick="event.stopPropagation(); selectSlot('${slot.id}');" class="w-full py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                                isSelected 
+                                ? 'bg-quark-400 text-slate-950 font-black shadow-md' 
+                                : 'bg-slate-800 hover:bg-quark-500 hover:text-slate-950 text-slate-200'
+                            }">
+                                <i class="fa-solid ${isSelected ? 'fa-circle-check' : 'fa-hand-pointer'}"></i>
+                                <span>${isSelected ? '선택 완료 ✓' : '이 시간대 선택하기'}</span>
+                            </button>
+                        `}
+                    </div>
+                `;
+
+                if (slot.session === 'session1') {
+                    s1Container.innerHTML += cardHtml;
+                } else {
+                    s2Container.innerHTML += cardHtml;
+                }
+            });
+
+            updateSubmitButton();
+            renderAdminStats();
+        }
+
+        function switchTab(tabName) {
+            if (tabName === 'admin' && !isAdminLoggedIn) {
+                openLoginModal();
+                return;
+            }
+
+            document.getElementById('view-reservation').classList.add('hidden');
+            document.getElementById('view-lookup').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+
+            document.getElementById('tab-btn-reservation').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800";
+            document.getElementById('tab-btn-lookup').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-300 hover:text-white hover:bg-slate-800";
+            document.getElementById('tab-btn-admin').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-amber-400 hover:bg-slate-800 flex items-center gap-1";
+
+            if (tabName === 'reservation') {
+                document.getElementById('view-reservation').classList.remove('hidden');
+                document.getElementById('tab-btn-reservation').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-quark-500 text-slate-950 hover:bg-quark-400 shadow-md";
+            } else if (tabName === 'lookup') {
+                document.getElementById('view-lookup').classList.remove('hidden');
+                document.getElementById('tab-btn-lookup').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-quark-500 text-slate-950 hover:bg-quark-400 shadow-md";
+            } else if (tabName === 'admin') {
+                document.getElementById('view-admin').classList.remove('hidden');
+                document.getElementById('tab-btn-admin').className = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 bg-amber-500 text-slate-950 hover:bg-amber-400 shadow-md flex items-center gap-1";
+                renderAdminView();
+            }
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginAdminId').value = '';
+            document.getElementById('loginAdminPw').value = '';
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+            document.getElementById('loginModalOverlay').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModalOverlay').classList.add('hidden');
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const idInput = document.getElementById('loginAdminId').value.trim();
+            const pwInput = document.getElementById('loginAdminPw').value.trim();
+
+            if (idInput === ADMIN_ID && pwInput === ADMIN_PW) {
+                isAdminLoggedIn = true;
+                closeLoginModal();
+                switchTab('admin');
+                showModal("🔓 관리자 인증 성공", "관리자 모드로 접속하였습니다.", "text-amber-400");
+            } else {
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
+            }
+        }
+
+        function selectSlot(slotId) {
+            selectedSlotId = slotId;
+            renderSlots();
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const selectedText = document.getElementById('selectedSlotText');
+
+            if (!submitBtn || !selectedText) return;
+
+            if (!selectedSlotId) {
+                selectedText.textContent = '시간을 선택해 주세요';
+                selectedText.className = 'font-bold text-slate-500 text-base';
+                submitBtn.disabled = true;
+                submitBtn.className = "w-full sm:w-auto px-8 py-3.5 rounded-xl text-base font-extrabold transition-all duration-200 bg-slate-800 text-slate-500 cursor-not-allowed flex items-center justify-center gap-2";
+            } else {
+                const config = SLOT_CONFIG.find(s => s.id === selectedSlotId);
+                selectedText.textContent = `${config.label} (${config.timeText})`;
+                selectedText.className = 'font-bold text-quark-400 text-base';
+                submitBtn.disabled = false;
+                submitBtn.className = "w-full sm:w-auto px-8 py-3.5 rounded-xl text-base font-extrabold transition-all duration-200 bg-quark-500 hover:bg-quark-400 text-slate-950 cursor-pointer shadow-lg shadow-quark-500/20 transform hover:-translate-y-0.5 flex items-center justify-center gap-2";
+            }
+        }
+
+        function handleReservationSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('userName').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+            const phone = document.getElementById('userPhone').value.trim();
+
+            if (!name || !studentId) {
+                showModal("⚠️ 정보 입력 필요", "이름과 학번을 정확히 입력해주세요.", "text-amber-400");
+                return;
+            }
+
+            if (!selectedSlotId) {
+                showModal("⚠️ 시간 선택 필요", "체험하고자 하는 시간대를 선택해주세요.", "text-amber-400");
+                return;
+            }
+
+            // Check if slot reached capacity
+            const currentCount = reservations.filter(r => r.slotId === selectedSlotId).length;
+            if (currentCount >= MAX_CAPACITY) {
+                showModal("❌ 정원 마감", "선택한 시간대는 이미 6명 정원이 마감되었습니다. 다른 시간대를 선택해주세요.", "text-rose-400");
+                selectedSlotId = null;
+                renderSlots();
+                return;
+            }
+
+            // Check duplicate booking by studentId
+            const existing = reservations.find(r => r.studentId === studentId);
+            if (existing) {
+                const existingSlot = SLOT_CONFIG.find(s => s.id === existing.slotId);
+                showModal("⚠️ 중복 신청 안내", `이미 <strong>${existing.name} (${existing.studentId})</strong> 학번으로 [${existingSlot.label} - ${existingSlot.timeText}]에 예약되어 있습니다.<br>시간 변경을 원하시면 예약 조회 탭에서 기존 예약을 취소해주세요.`, "text-amber-400");
+                return;
+            }
+
+            // Save new reservation
+            const newRes = {
+                id: 'res_' + Date.now(),
+                name: name,
+                studentId: studentId,
+                phone: phone,
+                slotId: selectedSlotId,
+                createdAt: new Date().toISOString()
+            };
+
+            reservations.push(newRes);
+            saveState();
+
+            const slotInfo = SLOT_CONFIG.find(s => s.id === selectedSlotId);
+
+            // Reset form
+            document.getElementById('userName').value = '';
+            document.getElementById('studentId').value = '';
+            document.getElementById('userPhone').value = '';
+            selectedSlotId = null;
+
+            renderSlots();
+
+            showModal("🎉 축전 부스 예약 완료!", `
+                <div class="text-left bg-slate-950 p-4 rounded-xl border border-slate-800 my-2">
+                    <p class="text-slate-300 text-xs">신청자: <strong class="text-white">${newRes.name} (${newRes.studentId})</strong></p>
+                    <p class="text-slate-300 text-xs mt-1">예약 타임: <strong class="text-quark-400 font-bold">${slotInfo.label} (${slotInfo.timeText})</strong></p>
+                    <p class="text-slate-400 text-[11px] mt-2">※ 축전 당일(9월 23일) 체험 시작 5분 전까지 쿼크 동아리 부스로 방문해 주세요!</p>
+                </div>
+            `, "text-quark-400");
+        }
+
+        function performLookup() {
+            const name = document.getElementById('lookupName').value.trim();
+            const studentId = document.getElementById('lookupStudentId').value.trim();
+            const resultBox = document.getElementById('lookupResult');
+
+            if (!name || !studentId) {
+                showModal("⚠️ 입력 오류", "조회할 이름과 학번을 모두 입력해주세요.", "text-amber-400");
+                return;
+            }
+
+            const found = reservations.find(r => r.name === name && r.studentId === studentId);
+
+            resultBox.classList.remove('hidden');
+
+            if (!found) {
+                resultBox.innerHTML = `
+                    <div class="p-6 rounded-xl bg-slate-900 border border-slate-800 text-center">
+                        <i class="fa-solid fa-circle-xmark text-slate-500 text-3xl mb-2"></i>
+                        <p class="text-slate-300 font-bold text-sm">일치하는 예약 내역이 없습니다.</p>
+                        <p class="text-xs text-slate-500 mt-1">이름과 학번이 정확한지 확인 후 다시 시도해보세요.</p>
+                    </div>
+                `;
+            } else {
+                const slotInfo = SLOT_CONFIG.find(s => s.id === found.slotId);
+                resultBox.innerHTML = `
+                    <div class="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-950 border border-quark-500/30 relative overflow-hidden">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                            <div>
+                                <span class="px-2.5 py-1 rounded-full bg-quark-500/20 text-quark-400 text-xs font-bold border border-quark-500/30">
+                                    <i class="fa-solid fa-ticket mr-1"></i> 예약 확정
+                                </span>
+                                <h4 class="text-xl font-black text-white mt-2">${found.name} 학생</h4>
+                                <p class="text-xs text-slate-400">학번: ${found.studentId} ${found.phone ? `| 연락처: ${found.phone}` : ''}</p>
+                            </div>
+
+                            <button onclick="cancelReservation('${found.id}')" class="px-3.5 py-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30 hover:bg-rose-500/20 text-xs font-bold transition-all">
+                                <i class="fa-solid fa-ban mr-1"></i> 예약 취소하기
+                            </button>
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400">예약 타임</p>
+                                <p class="text-base font-bold text-quark-400">${slotInfo.label}</p>
+                                <p class="text-sm font-semibold text-white">${slotInfo.timeText}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-slate-400">축전 날짜</p>
+                                <p class="text-sm font-bold text-white">9월 23일(수)</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function cancelReservation(resId) {
+            const res = reservations.find(r => r.id === resId);
+            if (!res) return;
+
+            reservations = reservations.filter(r => r.id !== resId);
+            saveState();
+            renderSlots();
+
+            document.getElementById('lookupResult').classList.add('hidden');
+            document.getElementById('lookupName').value = '';
+            document.getElementById('lookupStudentId').value = '';
+
+            showModal("🗑️ 예약 취소완료", `${res.name} (${res.studentId}) 학생의 예약이 취소되었습니다.`, "text-slate-400");
+        }
+
+        function renderAdminStats() {
+            const totalReservedEl = document.getElementById('adminTotalReserved');
+            if (!totalReservedEl) return;
+
+            const totalReserved = reservations.length;
+            const closedSlots = SLOT_CONFIG.filter(s => {
+                return reservations.filter(r => r.slotId === s.id).length >= MAX_CAPACITY;
+            }).length;
+
+            totalReservedEl.textContent = `${totalReserved}명`;
+            document.getElementById('adminClosedSlotsCount').textContent = `${closedSlots} / 12`;
+            document.getElementById('adminRemainingSeats').textContent = `${72 - totalReserved}석`;
+        }
+
+        function renderAdminView() {
+            renderAdminStats();
+            const listContainer = document.getElementById('adminSlotsList');
+            if (!listContainer) return;
+            listContainer.innerHTML = '';
+
+            SLOT_CONFIG.forEach(slot => {
+                const slotRes = reservations.filter(r => r.slotId === slot.id);
+                const count = slotRes.length;
+                const isFull = count >= MAX_CAPACITY;
+
+                let badge = isFull ? '<span class="text-xs text-rose-400 font-bold px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/30">마감 (6/6명)</span>' : `<span class="text-xs text-quark-400 font-bold px-2 py-0.5 rounded bg-quark-500/10 border border-quark-500/30">${count} / 6명</span>`;
+
+                let membersList = slotRes.map((r, idx) => `
+                    <div class="flex items-center justify-between text-xs bg-slate-950 px-3 py-2 rounded-lg border border-slate-800">
+                        <span class="text-slate-300">
+                            <strong class="text-white text-sm mr-2">${idx + 1}. ${r.name}</strong> 
+                            <span class="text-slate-400">학번: ${r.studentId}</span>
+                            ${r.phone ? `<span class="text-slate-500 ml-2">(${r.phone})</span>` : ''}
+                        </span>
+                        <button onclick="cancelReservation('${r.id}'); renderAdminView();" class="text-slate-500 hover:text-rose-400 transition-all text-xs font-semibold px-2 py-1">
+                            <i class="fa-solid fa-xmark mr-1"></i>삭제
+                        </button>
+                    </div>
+                `).join('');
+
+                if (slotRes.length === 0) {
+                    membersList = `<p class="text-xs text-slate-500 italic p-2">현재 신청자가 없습니다.</p>`;
+                }
+
+                listContainer.innerHTML += `
+                    <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                        <div class="flex items-center justify-between mb-3 border-b border-slate-800/80 pb-2">
+                            <div>
+                                <span class="text-xs font-bold text-slate-400 mr-2">${slot.label}</span>
+                                <strong class="text-sm text-white">${slot.timeText}</strong>
+                            </div>
+                            ${badge}
+                        </div>
+                        <div class="space-y-2">
+                            ${membersList}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function exportToCSV() {
+            if (reservations.length === 0) {
+                showModal("알림", "다운로드할 예약 내역이 없습니다.", "text-amber-400");
+                return;
+            }
+
+            let csvContent = "\uFEFF이름,학번,연락처,타임,시간대,신청시각\n";
+            reservations.forEach(r => {
+                const slot = SLOT_CONFIG.find(s => s.id === r.slotId);
+                csvContent += `"${r.name}","${r.studentId}","${r.phone || '-'}","${slot.label}","${slot.timeText}","${r.createdAt}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `QUARK_축전예약명단_9월23일.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function fillSampleData() {
+            const openSlot = SLOT_CONFIG.find(s => {
+                return reservations.filter(r => r.slotId === s.id).length < MAX_CAPACITY;
+            });
+
+            if (!openSlot) {
+                showModal("알림", "모든 타임이 이미 6명으로 마감되었습니다.", "text-amber-400");
+                return;
+            }
+
+            const existingCount = reservations.filter(r => r.slotId === openSlot.id).length;
+            const needed = MAX_CAPACITY - existingCount;
+            const sampleNames = ['강민성', '윤아린', '송현우', '임채원', '배주원', '신태양'];
+
+            for (let i = 0; i < needed; i++) {
+                reservations.push({
+                    id: 'res_sample_' + Date.now() + '_' + i,
+                    name: sampleNames[i % sampleNames.length],
+                    studentId: `20${i+1}0${i+1}`,
+                    phone: '010-0000-0000',
+                    slotId: openSlot.id,
+                    createdAt: new Date().toISOString()
+                });
+            }
+
+            saveState();
+            renderSlots();
+            renderAdminView();
+
+            showModal("⚡ 샘플 등록 완료", `[${openSlot.label} - ${openSlot.timeText}] 타임의 6명 정원이 채워져 마감 상태로 전환되었습니다.`, "text-quark-400");
+        }
+
+        function resetAllData() {
+            reservations = [];
+            saveState();
+            renderSlots();
+            renderAdminView();
+            showModal("🗑️ 전체 초기화", "모든 예약 데이터가 삭제되었습니다.", "text-slate-400");
+        }
+
+        function showModal(title, message, titleColorClass = "text-quark-400") {
+            const overlay = document.getElementById('modalOverlay');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+
+            modalTitle.innerHTML = title;
+            modalTitle.className = `text-xl font-bold text-center mb-2 ${titleColorClass}`;
+            modalMessage.innerHTML = message;
+
+            overlay.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderSlots();
+        });
+    </script>
+</body>
+</html>
